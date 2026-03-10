@@ -1,1012 +1,579 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Happy Birthday ♥</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <!-- Floating hearts -->
-    <div class="hearts">
-      <span>♥</span>
-      <span>♥</span>
-      <span>♥</span>
-      <span>♥</span>
-      <span>♥</span>
-      <span>♥</span>
-      <span>♥</span>
-      <span>♥</span>
-      <span>♥</span>
-      <span>♥</span>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Happy Birthday ♥</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Cinzel+Decorative:wght@400&family=EB+Garamond:ital@1&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --rose:  #c8637a;
+      --blush: #f2b8c6;
+      --cream: #f9ede8;
+      --deep:  #1a060e;
+      --wine:  #3b0d1c;
+      --gold:  #d4a574;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: var(--deep);
+      font-family: 'Cormorant Garamond', serif;
+    }
+
+    /* ── BACKGROUND ── */
+    .bg-layer {
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 30% 20%, rgba(120,30,55,0.45) 0%, transparent 65%),
+        radial-gradient(ellipse 60% 50% at 75% 80%, rgba(90,20,40,0.35) 0%, transparent 60%),
+        radial-gradient(ellipse 100% 100% at 50% 50%, #1a060e 40%, #2e0c1a 100%);
+      animation: bgBreath 8s ease-in-out infinite alternate;
+    }
+    @keyframes bgBreath {
+      from { opacity: 0.85; } to { opacity: 1; }
+    }
+
+    .vignette {
+      position: fixed; inset: 0; z-index: 1;
+      background: radial-gradient(ellipse at center, transparent 25%, rgba(10,2,6,0.55) 65%, rgba(5,0,3,0.85) 100%);
+      pointer-events: none;
+    }
+
+    /* ── PETAL CANVAS ── */
+    #petalCanvas {
+      position: fixed; inset: 0; z-index: 2;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 1.5s ease;
+    }
+    #petalCanvas.visible { opacity: 1; }
+
+    /* ── CORNER ORNAMENTS ── */
+    .ornament {
+      position: fixed; z-index: 5;
+      color: rgba(200,99,122,0.22);
+      font-size: 2.2em;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 1s ease 1.5s;
+    }
+    .ornament.visible { opacity: 1; }
+    .ornament-tl { top: 22px;    left: 26px; }
+    .ornament-tr { top: 22px;    right: 26px; transform: scaleX(-1); }
+    .ornament-bl { bottom: 22px; left: 26px;  transform: scaleY(-1); }
+    .ornament-br { bottom: 22px; right: 26px; transform: scale(-1,-1); }
+
+    /* ════════════════════════════════
+       SCREEN 1 — ENVELOPE
+    ════════════════════════════════ */
+    #envelopeScreen {
+      position: fixed; inset: 0; z-index: 20;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 38px;
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    #envelopeScreen.hide {
+      opacity: 0; transform: scale(0.92);
+      pointer-events: none;
+    }
+
+    .env-label {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(0.52em, 1.4vw, 0.68em);
+      letter-spacing: 0.32em;
+      color: rgba(242,184,198,0.5);
+      text-transform: uppercase;
+      animation: fadeUp 1.4s ease 0.3s both;
+    }
+
+    /* The envelope */
+    .envelope {
+      position: relative;
+      width: clamp(260px, 44vw, 380px);
+      aspect-ratio: 1.6 / 1;
+      cursor: pointer;
+      animation: fadeUp 1.4s ease 0.5s both;
+      filter: drop-shadow(0 12px 60px rgba(180,60,90,0.35));
+      transition: filter 0.3s, transform 0.3s;
+      perspective: 600px;
+    }
+    .envelope:hover {
+      filter: drop-shadow(0 18px 80px rgba(200,80,110,0.55));
+      transform: translateY(-4px);
+    }
+
+    .env-body {
+      position: absolute; inset: 0;
+      background: linear-gradient(160deg, #2e0c1a 0%, #1e0812 100%);
+      border: 1px solid rgba(210,120,150,0.28);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .env-body::before {
+      content: ''; position: absolute; inset: 0;
+      background:
+        linear-gradient(135deg, rgba(200,99,122,0.07) 0%, transparent 50%),
+        linear-gradient(-45deg, rgba(200,99,122,0.05) 0%, transparent 50%);
+    }
+
+    .env-bottom {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 55%;
+      background: linear-gradient(175deg, #3b0d1c 0%, #250910 100%);
+      clip-path: polygon(0% 100%, 50% 0%, 100% 100%);
+    }
+    .env-left {
+      position: absolute; top: 0; left: 0; bottom: 0; width: 50%;
+      background: linear-gradient(90deg, #200a14 0%, #2a0d18 100%);
+      clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
+    }
+    .env-right {
+      position: absolute; top: 0; right: 0; bottom: 0; width: 50%;
+      background: linear-gradient(-90deg, #200a14 0%, #2a0d18 100%);
+      clip-path: polygon(100% 0%, 0% 50%, 100% 100%);
+    }
+
+    /* top flap */
+    .env-flap {
+      position: absolute; top: 0; left: 0; right: 0; height: 55%;
+      background: linear-gradient(175deg, #3d1020 0%, #2b0c18 100%);
+      clip-path: polygon(0% 0%, 50% 100%, 100% 0%);
+      transform-origin: top center;
+      transform: rotateX(0deg);
+      transition: transform 0.75s cubic-bezier(0.4,0,0.2,1);
+      border-bottom: 1px solid rgba(210,120,150,0.2);
+      z-index: 2;
+    }
+    .envelope.opening .env-flap {
+      transform: rotateX(-180deg);
+    }
+
+    /* wax seal */
+    .seal {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: clamp(46px, 8vw, 60px);
+      height: clamp(46px, 8vw, 60px);
+      border-radius: 50%;
+      background: radial-gradient(circle at 38% 38%, #e07090, #a03050);
+      border: 2px solid rgba(255,180,200,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: clamp(1.1em, 2.5vw, 1.5em);
+      color: rgba(255,220,230,0.9);
+      z-index: 3;
+      box-shadow: 0 2px 18px rgba(180,50,80,0.5), inset 0 1px 4px rgba(255,200,210,0.2);
+      transition: transform 0.35s ease 0.1s, opacity 0.35s ease 0.1s;
+    }
+    .envelope.opening .seal {
+      transform: translate(-50%, -50%) scale(0);
+      opacity: 0;
+    }
+
+    .env-shine {
+      position: absolute; inset: 0; border-radius: 3px;
+      background: linear-gradient(108deg, transparent 40%, rgba(255,180,200,0.06) 50%, transparent 60%);
+      background-size: 220% 100%;
+      animation: envSweep 4s ease-in-out infinite;
+      pointer-events: none; z-index: 4;
+    }
+    @keyframes envSweep {
+      0%   { background-position: 220% center; }
+      100% { background-position: -220% center; }
+    }
+
+    /* open button */
+    .open-btn {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(0.48em, 1.3vw, 0.62em);
+      letter-spacing: 0.3em; color: var(--blush);
+      background: rgba(26,6,14,0.5);
+      border: 1px solid rgba(210,120,150,0.32);
+      padding: 14px 40px; border-radius: 60px; cursor: pointer;
+      text-transform: uppercase;
+      backdrop-filter: blur(8px);
+      transition: all 0.3s ease;
+      animation: fadeUp 1.4s ease 0.9s both;
+    }
+    .open-btn:hover {
+      border-color: rgba(210,120,150,0.75);
+      box-shadow: 0 0 32px rgba(200,99,122,0.22);
+      color: var(--cream);
+      transform: translateY(-2px);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ════════════════════════════════
+       SCREEN 2 — PORTRAIT + CARD
+    ════════════════════════════════ */
+    #cardScreen {
+      position: fixed; inset: 0; z-index: 10;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 1.2s ease 0.5s;
+    }
+    #cardScreen.visible { opacity: 1; pointer-events: all; }
+
+    .portrait-wrap {
+      position: absolute; inset: 0;
+      opacity: 0;
+      filter: blur(18px) brightness(2);
+      transform: scale(1.05);
+      transition: opacity 1.6s ease 0.7s, filter 1.6s ease 0.7s, transform 1.6s ease 0.7s;
+    }
+    #cardScreen.visible .portrait-wrap {
+      opacity: 1; filter: blur(0) brightness(1); transform: scale(1);
+    }
+
+    .portrait-text {
+      position: absolute; top: 0; left: 0;
+      width: 100vw; height: 100vh; overflow: hidden;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.58em; font-style: italic;
+      line-height: 0.675em; letter-spacing: -0.008em; word-spacing: -0.05em;
+      background: url('face.jpg') center center / cover no-repeat;
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      filter: sepia(0.3) saturate(1.8) contrast(1.5) brightness(0.85) hue-rotate(320deg);
+    }
+    .portrait-text::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(108deg, transparent 38%, rgba(255,190,210,0.07) 50%, transparent 62%);
+      background-size: 220% 100%;
+      animation: sweep 7s ease-in-out infinite 5s;
+    }
+    @keyframes sweep {
+      0%   { background-position: 220% center; }
+      100% { background-position: -220% center; }
+    }
+
+    /* ── FLOATING TEXT OVERLAY ── */
+    .overlay-text {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      z-index: 10;
+      text-align: center;
+      padding: 0 0 48px;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 1.2s ease 1s, transform 1.2s ease 1s;
+      pointer-events: none;
+    }
+    #cardScreen.visible .overlay-text { opacity: 1; transform: translateY(0); }
+
+    /* soft gradient fade at bottom so text sits on darkness */
+    .overlay-text::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0; height: 260px;
+      background: linear-gradient(to top, rgba(10,2,6,0.82) 0%, transparent 100%);
+      z-index: -1;
+    }
+
+    /* glass card wrapping the text content */
+    .overlay-card {
+      display: inline-block;
+      position: relative;
+      margin: 0 auto 32px;
+      padding: 32px 52px;
+      background: rgba(18,4,10,0.08);
+      backdrop-filter: blur(3px) saturate(1.1);
+      -webkit-backdrop-filter: blur(3px) saturate(1.1);
+      border: 1px solid rgba(210,120,150,0.2);
+      border-radius: 2px;
+      box-shadow: 0 0 60px rgba(180,60,90,0.12), inset 0 0 30px rgba(200,90,120,0.04);
+    }
+    .overlay-card::before, .overlay-card::after {
+      content: ''; position: absolute;
+      left: 16px; right: 16px; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(210,120,150,0.35), transparent);
+    }
+    .overlay-card::before { top: 12px; }
+    .overlay-card::after  { bottom: 12px; }
+
+    .ot-eyebrow {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(0.45em, 1.1vw, 0.58em);
+      letter-spacing: 0.42em;
+      color: var(--rose);
+      text-transform: uppercase;
+      opacity: 0.8;
+      margin-bottom: 10px;
+    }
+
+    .ot-main {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(2.6em, 6.5vw, 5em);
+      line-height: 0.95;
+      color: var(--cream);
+      letter-spacing: 0.06em;
+      text-shadow:
+        0 0 60px rgba(210,140,160,0.5),
+        0 2px 40px rgba(180,60,90,0.4),
+        0 1px 8px rgba(5,0,3,0.6);
+      margin-bottom: 6px;
+    }
+
+    .ot-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(0.75em, 1.8vw, 0.95em);
+      color: var(--blush);
+      letter-spacing: 0.18em;
+      opacity: 0.7;
+      margin-bottom: 18px;
+      text-shadow: 0 0 30px rgba(242,184,198,0.35);
+    }
+
+    .ot-divider {
+      display: flex; align-items: center; justify-content: center;
+      gap: 14px; margin: 0 auto 16px;
+      width: fit-content;
+    }
+    .ot-divider::before, .ot-divider::after {
+      content: '';
+      width: 60px; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(200,99,122,0.55));
+    }
+    .ot-divider::after { transform: scaleX(-1); }
+
+    .ot-heart {
+      display: inline-block; font-size: 0.9em; color: var(--rose);
+      animation: heartPulse 2.2s ease-in-out infinite;
+      filter: drop-shadow(0 0 8px rgba(200,99,122,0.8));
+    }
+    @keyframes heartPulse {
+      0%,100% { transform: scale(1); }
+      45%      { transform: scale(1.25); }
+      55%      { transform: scale(1.2); }
+    }
+
+    .ot-message {
+      font-family: 'EB Garamond', serif;
+      font-style: italic;
+      font-size: clamp(0.78em, 1.8vw, 0.96em);
+      color: rgba(249,237,232,0.72);
+      line-height: 1.75;
+      letter-spacing: 0.02em;
+      text-shadow: 0 1px 10px rgba(5,0,3,0.5);
+      margin-bottom: 14px;
+    }
+
+    .ot-stamp {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 0.42em;
+      letter-spacing: 0.3em;
+      color: var(--gold);
+      opacity: 0.6;
+      text-transform: uppercase;
+    }
+
+    /* confetti layer */
+    #confettiCanvas {
+      position: fixed; inset: 0; z-index: 25; pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-layer"></div>
+  <div class="vignette"></div>
+  <canvas id="petalCanvas"></canvas>
+
+  <div class="ornament ornament-tl">✦</div>
+  <div class="ornament ornament-tr">✦</div>
+  <div class="ornament ornament-bl">✦</div>
+  <div class="ornament ornament-br">✦</div>
+
+  <!-- ── SCREEN 1: ENVELOPE ── -->
+  <div id="envelopeScreen">
+    <div class="env-label">A little something for you</div>
+
+    <div class="envelope" id="envelope">
+      <div class="env-body">
+        <div class="env-left"></div>
+        <div class="env-right"></div>
+        <div class="env-bottom"></div>
+        <div class="env-shine"></div>
+      </div>
+      <div class="env-flap"></div>
+      <div class="seal">♥</div>
     </div>
 
-    <section>
-      <p>
-        What day is it? And in what month? This clock never seemed so alive I
-        can't keep up and I can't back down I've been losing so much time 'Cause
-        it's you and me and all of the people with nothing to do Nothing to lose
-        And it's you and me and all other people And I don't know why, I can't
-        keep my eyes off of you All of the things that I want to say just aren't
-        coming out right I'm tripping on words You've got my head spinning I
-        don't know where to go from here 'Cause it's you and me and all of the
-        people with nothing to do Nothing to prove And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you
-        There's something about you now I can't quite figure out Everything she
-        does is beautiful Everything she does is right 'Cause it's you and me
-        and all of the people with nothing to do Nothing to lose And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you And me and all other people with nothing to do Nothing to
-        prove And it's you and me and all other people And I don't know why, I
-        can't keep my eyes off of you What day is it? And in what month? This
-        clock never seemed so aliveWhat day is it? And in what month? This clock
-        never seemed so alive I can't keep up and I can't back down I've been
-        losing so much time 'Cause it's you and me and all of the people with
-        nothing to do Nothing to lose And it's you and me and all other people
-        And I don't know why, I can't keep my eyes off of you All of the things
-        that I want to say just aren't coming out right I'm tripping on words
-        You've got my head spinning I don't know where to go from here 'Cause
-        it's you and me and all of the people with nothing to do Nothing to
-        prove And it's you and me and all other people And I don't know why, I
-        can't keep my eyes off of you There's something about you now I can't
-        quite figure out Everything she does is beautiful Everything she does is
-        right 'Cause it's you and me and all of the people with nothing to do
-        Nothing to lose And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you And me and all other people
-        with nothing to do Nothing to prove And it's you and me and all other
-        people And I don't know why, I can't keep my eyes off of you What day is
-        it? And in what month? This clock never seemed so alive What day is it?
-        And in what month? This clock never seemed so alive I can't keep up and
-        I can't back down I've been losing so much time 'Cause it's you and me
-        and all of the people with nothing to do Nothing to lose And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you All of the things that I want to say just aren't coming out
-        right I'm tripping on words You've got my head spinning I don't know
-        where to go from here 'Cause it's you and me and all of the people with
-        nothing to do Nothing to prove And it's you and me and all other people
-        And I don't know why, I can't keep my eyes off of you There's something
-        about you now I can't quite figure out Everything she does is beautiful
-        Everything she does is right 'Cause it's you and me and all of the
-        people with nothing to do Nothing to lose And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you And
-        me and all other people with nothing to do Nothing to prove And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you What day is it? And in what month? This clock never seemed so
-        alive What day is it? And in what month? This clock never seemed so
-        alive I can't keep up and I can't back down I've been losing so much
-        time 'Cause it's you and me and all of the people with nothing to do
-        Nothing to lose And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you All of the things that I want
-        to say just aren't coming out right I'm tripping on words You've got my
-        head spinning I don't know where to go from here 'Cause it's you and me
-        and all of the people with nothing to do Nothing to prove And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you There's something about you now I can't quite figure out
-        Everything she does is beautiful Everything she does is right 'Cause
-        it's you and me and all of the people with nothing to do Nothing to lose
-        And it's you and me and all other people And I don't know why, I can't
-        keep my eyes off of you And me and all other people with nothing to do
-        Nothing to prove And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you What day is it? And in what
-        month? This clock never seemed so alive What day is it? And in what
-        month? This clock never seemed so alive I can't keep up and I can't back
-        down I've been losing so much time 'Cause it's you and me and all of the
-        people with nothing to do Nothing to lose And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you All
-        of the things that I want to say just aren't coming out right I'm
-        tripping on words You've got my head spinning I don't know where to go
-        from here 'Cause it's you and me and all of the people with nothing to
-        do Nothing to prove And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you There's something about you
-        now I can't quite figure out Everything she does is beautiful Everything
-        she does is right 'Cause it's you and me and all of the people with
-        nothing to do Nothing to lose And it's you and me and all other people
-        And I don't know why, I can't keep my eyes off of you And me and all
-        other people with nothing to do Nothing to prove And it's you and me and
-        all other people And I don't know why, I can't keep my eyes off of you
-        What day is it? And in what month? This clock never seemed so alive What
-        day is it? And in what month? This clock never seemed so alive I can't
-        keep up and I can't back down I've been losing so much time 'Cause it's
-        you and me and all of the people with nothing to do Nothing to lose And
-        it's you and me and all other people And I don't know why, I can't keep
-        my eyes off of you All of the things that I want to say just aren't
-        coming out right I'm tripping on words You've got my head spinning I
-        don't know where to go from here 'Cause it's you and me and all of the
-        people with nothing to do Nothing to prove And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you
-        There's something about you now I can't quite figure out Everything she
-        does is beautiful Everything she does is right 'Cause it's you and me
-        and all of the people with nothing to do Nothing to lose And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you And me and all other people with nothing to do Nothing to
-        prove And it's you and me and all other people And I don't know why, I
-        can't keep my eyes off of you What day is it? And in what month? This
-        clock never seemed so alive What day is it? And in what month? This
-        clock never seemed so alive I can't keep up and I can't back down I've
-        been losing so much time 'Cause it's you and me and all of the people
-        with nothing to do Nothing to lose And it's you and me and all other
-        people And I don't know why, I can't keep my eyes off of you All of the
-        things that I want to say just aren't coming out right I'm tripping on
-        words You've got my head spinning I don't know where to go from here
-        'Cause it's you and me and all of the people with nothing to do Nothing
-        to prove And it's you and me and all other people And I don't know why,
-        I can't keep my eyes off of you There's something about you now I can't
-        quite figure out Everything she does is beautiful Everything she does is
-        right 'Cause it's you and me and all of the people with nothing to do
-        Nothing to lose And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you And me and all other people
-        with nothing to do Nothing to prove And it's you and me and all other
-        people And I don't know why, I can't keep my eyes off of you What day is
-        it? And in what month? This clock never seemed so alive What day is it?
-        And in what month? This clock never seemed so alive I can't keep up and
-        I can't back down I've been losing so much time 'Cause it's you and me
-        and all of the people with nothing to do Nothing to lose And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you All of the things that I want to say just aren't coming out
-        right I'm tripping on words You've got my head spinning I don't know
-        where to go from here 'Cause it's you and me and all of the people with
-        nothing to do Nothing to prove And it's you and me and all other people
-        And I don't know why, I can't keep my eyes off of you There's something
-        about you now I can't quite figure out Everything she does is beautiful
-        Everything she does is right 'Cause it's you and me and all of the
-        people with nothing to do Nothing to lose And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you And
-        me and all other people with nothing to do Nothing to prove And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you What day is it? And in what month? This clock never seemed so
-        alive What day is it? And in what month? This clock never seemed so
-        alive I can't keep up and I can't back down I've been losing so much
-        time 'Cause it's you and me and all of the people with nothing to do
-        Nothing to lose And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you All of the things that I want
-        to say just aren't coming out right I'm tripping on words You've got my
-        head spinning I don't know where to go from here 'Cause it's you and me
-        and all of the people with nothing to do Nothing to prove And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you There's something about you now I can't quite figure out
-        Everything she does is beautiful Everything she does is right 'Cause
-        it's you and me and all of the people with nothing to do Nothing to lose
-        And it's you and me and all other people And I don't know why, I can't
-        keep my eyes off of you And me and all other people with nothing to do
-        Nothing to prove And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you What day is it? And in what
-        month? This clock never seemed so alive What day is it? And in what
-        month? This clock never seemed so alive I can't keep up and I can't back
-        down I've been losing so much time 'Cause it's you and me and all of the
-        people with nothing to do Nothing to lose And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you All
-        of the things that I want to say just aren't coming out right I'm
-        tripping on words You've got my head spinning I don't know where to go
-        from here 'Cause it's you and me and all of the people with nothing to
-        do Nothing to prove And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you There's something about you
-        now I can't quite figure out Everything she does is beautiful Everything
-        she does is right 'Cause it's you and me and all of the people with
-        nothing to do Nothing to lose And it's you and me and all other people
-        And I don't know why, I can't keep my eyes off of you And me and all
-        other people with nothing to do Nothing to prove And it's you and me and
-        all other people And I don't know why, I can't keep my eyes off of you
-        What day is it? And in what month? This clock never seemed so alive
-                What day is it? And in what month? This clock never seemed so alive I
-        can't keep up and I can't back down I've been losing so much time 'Cause
-        it's you and me and all of the people with nothing to do Nothing to lose
-        And it's you and me and all other people And I don't know why, I can't
-        keep my eyes off of you All of the things that I want to say just aren't
-        coming out right I'm tripping on words You've got my head spinning I
-        don't know where to go from here 'Cause it's you and me and all of the
-        people with nothing to do Nothing to prove And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you
-        There's something about you now I can't quite figure out Everything she
-        does is beautiful Everything she does is right 'Cause it's you and me
-        and all of the people with nothing to do Nothing to lose And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you And me and all other people with nothing to do Nothing to
-        prove And it's you and me and all other people And I don't know why, I
-        can't keep my eyes off of you What day is it? And in what month? This
-        clock never seemed so aliveWhat day is it? And in what month? This clock
-        never seemed so alive I can't keep up and I can't back down I've been
-        losing so much time 'Cause it's you and me and all of the people with
-        nothing to do Nothing to lose And it's you and me and all other people
-        And I don't know why, I can't keep my eyes off of you All of the things
-        that I want to say just aren't coming out right I'm tripping on words
-        You've got my head spinning I don't know where to go from here 'Cause
-        it's you and me and all of the people with nothing to do Nothing to
-        prove And it's you and me and all other people And I don't know why, I
-        can't keep my eyes off of you There's something about you now I can't
-        quite figure out Everything she does is beautiful Everything she does is
-        right 'Cause it's you and me and all of the people with nothing to do
-        Nothing to lose And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you And me and all other people
-        with nothing to do Nothing to prove And it's you and me and all other
-        people And I don't know why, I can't keep my eyes off of you What day is
-        it? And in what month? This clock never seemed so alive What day is it?
-        And in what month? This clock never seemed so alive I can't keep up and
-        I can't back down I've been losing so much time 'Cause it's you and me
-        and all of the people with nothing to do Nothing to lose And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you All of the things that I want to say just aren't coming out
-        right I'm tripping on words You've got my head spinning I don't know
-        where to go from here 'Cause it's you and me and all of the people with
-        nothing to do Nothing to prove And it's you and me and all other people
-        And I don't know why, I can't keep my eyes off of you There's something
-        about you now I can't quite figure out Everything she does is beautiful
-        Everything she does is right 'Cause it's you and me and all of the
-        people with nothing to do Nothing to lose And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you And
-        me and all other people with nothing to do Nothing to prove And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you What day is it? And in what month? This clock never seemed so
-        alive What day is it? And in what month? This clock never seemed so
-        alive I can't keep up and I can't back down I've been losing so much
-        time 'Cause it's you and me and all of the people with nothing to do
-        Nothing to lose And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you All of the things that I want
-        to say just aren't coming out right I'm tripping on words You've got my
-        head spinning I don't know where to go from here 'Cause it's you and me
-        and all of the people with nothing to do Nothing to prove And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you There's something about you now I can't quite figure out
-        Everything she does is beautiful Everything she does is right 'Cause
-        it's you and me and all of the people with nothing to do Nothing to lose
-        And it's you and me and all other people And I don't know why, I can't
-        keep my eyes off of you And me and all other people with nothing to do
-        Nothing to prove And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you What day is it? And in what
-        month? This clock never seemed so alive What day is it? And in what
-        month? This clock never seemed so alive I can't keep up and I can't back
-        down I've been losing so much time 'Cause it's you and me and all of the
-        people with nothing to do Nothing to lose And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you All
-        of the things that I want to say just aren't coming out right I'm
-        tripping on words You've got my head spinning I don't know where to go
-        from here 'Cause it's you and me and all of the people with nothing to
-        do Nothing to prove And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you There's something about you
-        now I can't quite figure out Everything she does is beautiful Everything
-        she does is right 'Cause it's you and me and all of the people with
-        nothing to do Nothing to lose And it's you and me and all other people
-        And I don't know why, I can't keep my eyes off of you And me and all
-        other people with nothing to do Nothing to prove And it's you and me and
-        all other people And I don't know why, I can't keep my eyes off of you
-        What day is it? And in what month? This clock never seemed so alive What
-        day is it? And in what month? This clock never seemed so alive I can't
-        keep up and I can't back down I've been losing so much time 'Cause it's
-        you and me and all of the people with nothing to do Nothing to lose And
-        it's you and me and all other people And I don't know why, I can't keep
-        my eyes off of you All of the things that I want to say just aren't
-        coming out right I'm tripping on words You've got my head spinning I
-        don't know where to go from here 'Cause it's you and me and all of the
-        people with nothing to do Nothing to prove And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you
-        There's something about you now I can't quite figure out Everything she
-        does is beautiful Everything she does is right 'Cause it's you and me
-        and all of the people with nothing to do Nothing to lose And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you And me and all other people with nothing to do Nothing to
-        prove And it's you and me and all other people And I don't know why, I
-        can't keep my eyes off of you What day is it? And in what month? This
-        clock never seemed so alive What day is it? And in what month? This
-        clock never seemed so alive I can't keep up and I can't back down I've
-        been losing so much time 'Cause it's you and me and all of the people
-        with nothing to do Nothing to lose And it's you and me and all other
-        people And I don't know why, I can't keep my eyes off of you All of the
-        things that I want to say just aren't coming out right I'm tripping on
-        words You've got my head spinning I don't know where to go from here
-        'Cause it's you and me and all of the people with nothing to do Nothing
-        to prove And it's you and me and all other people And I don't know why,
-        I can't keep my eyes off of you There's something about you now I can't
-        quite figure out Everything she does is beautiful Everything she does is
-        right 'Cause it's you and me and all of the people with nothing to do
-        Nothing to lose And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you And me and all other people
-        with nothing to do Nothing to prove And it's you and me and all other
-        people And I don't know why, I can't keep my eyes off of you What day is
-        it? And in what month? This clock never seemed so alive What day is it?
-        And in what month? This clock never seemed so alive I can't keep up and
-        I can't back down I've been losing so much time 'Cause it's you and me
-        and all of the people with nothing to do Nothing to lose And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you All of the things that I want to say just aren't coming out
-        right I'm tripping on words You've got my head spinning I don't know
-        where to go from here 'Cause it's you and me and all of the people with
-        nothing to do Nothing to prove And it's you and me and all other people
-        And I don't know why, I can't keep my eyes off of you There's something
-        about you now I can't quite figure out Everything she does is beautiful
-        Everything she does is right 'Cause it's you and me and all of the
-        people with nothing to do Nothing to lose And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you And
-        me and all other people with nothing to do Nothing to prove And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you What day is it? And in what month? This clock never seemed so
-        alive What day is it? And in what month? This clock never seemed so
-        alive I can't keep up and I can't back down I've been losing so much
-        time 'Cause it's you and me and all of the people with nothing to do
-        Nothing to lose And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you All of the things that I want
-        to say just aren't coming out right I'm tripping on words You've got my
-        head spinning I don't know where to go from here 'Cause it's you and me
-        and all of the people with nothing to do Nothing to prove And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you There's something about you now I can't quite figure out
-        Everything she does is beautiful Everything she does is right 'Cause
-        it's you and me and all of the people with nothing to do Nothing to lose
-        And it's you and me and all other people And I don't know why, I can't
-        keep my eyes off of you And me and all other people with nothing to do
-        Nothing to prove And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you What day is it? And in what
-        month? This clock never seemed so alive What day is it? And in what
-        month? This clock never seemed so alive I can't keep up and I can't back
-        down I've been losing so much time 'Cause it's you and me and all of the
-        people with nothing to do Nothing to lose And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you All
-        of the things that I want to say just aren't coming out right I'm
-        tripping on words You've got my head spinning I don't know where to go
-        from here 'Cause it's you and me and all of the people with nothing to
-        do Nothing to prove And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you There's something about you
-        now I can't quite figure out Everything she does is beautiful Everything
-        she does is right 'Cause it's you and me and all of the people with
-        nothing to do Nothing to lose And it's you and me and all other people
-        And I don't know why, I can't keep my eyes off of you And me and all
-        other people with nothing to do Nothing to prove And it's you and me and
-        all other people And I don't know why, I can't keep my eyes off of you
-        What day is it? And in what month? This clock never seemed so alive
-                What day is it? And in what month? This clock never seemed so alive I
-        can't keep up and I can't back down I've been losing so much time 'Cause
-        it's you and me and all of the people with nothing to do Nothing to lose
-        And it's you and me and all other people And I don't know why, I can't
-        keep my eyes off of you All of the things that I want to say just aren't
-        coming out right I'm tripping on words You've got my head spinning I
-        don't know where to go from here 'Cause it's you and me and all of the
-        people with nothing to do Nothing to prove And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you
-        There's something about you now I can't quite figure out Everything she
-        does is beautiful Everything she does is right 'Cause it's you and me
-        and all of the people with nothing to do Nothing to lose And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you And me and all other people with nothing to do Nothing to
-        prove And it's you and me and all other people And I don't know why, I
-        can't keep my eyes off of you What day is it? And in what month? This
-        clock never seemed so aliveWhat day is it? And in what month? This clock
-        never seemed so alive I can't keep up and I can't back down I've been
-        losing so much time 'Cause it's you and me and all of the people with
-        nothing to do Nothing to lose And it's you and me and all other people
-        And I don't know why, I can't keep my eyes off of you All of the things
-        that I want to say just aren't coming out right I'm tripping on words
-        You've got my head spinning I don't know where to go from here 'Cause
-        it's you and me and all of the people with nothing to do Nothing to
-        prove And it's you and me and all other people And I don't know why, I
-        can't keep my eyes off of you There's something about you now I can't
-        quite figure out Everything she does is beautiful Everything she does is
-        right 'Cause it's you and me and all of the people with nothing to do
-        Nothing to lose And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you And me and all other people
-        with nothing to do Nothing to prove And it's you and me and all other
-        people And I don't know why, I can't keep my eyes off of you What day is
-        it? And in what month? This clock never seemed so alive What day is it?
-        And in what month? This clock never seemed so alive I can't keep up and
-        I can't back down I've been losing so much time 'Cause it's you and me
-        and all of the people with nothing to do Nothing to lose And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you All of the things that I want to say just aren't coming out
-        right I'm tripping on words You've got my head spinning I don't know
-        where to go from here 'Cause it's you and me and all of the people with
-        nothing to do Nothing to prove And it's you and me and all other people
-        And I don't know why, I can't keep my eyes off of you There's something
-        about you now I can't quite figure out Everything she does is beautiful
-        Everything she does is right 'Cause it's you and me and all of the
-        people with nothing to do Nothing to lose And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you And
-        me and all other people with nothing to do Nothing to prove And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you What day is it? And in what month? This clock never seemed so
-        alive What day is it? And in what month? This clock never seemed so
-        alive I can't keep up and I can't back down I've been losing so much
-        time 'Cause it's you and me and all of the people with nothing to do
-        Nothing to lose And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you All of the things that I want
-        to say just aren't coming out right I'm tripping on words You've got my
-        head spinning I don't know where to go from here 'Cause it's you and me
-        and all of the people with nothing to do Nothing to prove And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you There's something about you now I can't quite figure out
-        Everything she does is beautiful Everything she does is right 'Cause
-        it's you and me and all of the people with nothing to do Nothing to lose
-        And it's you and me and all other people And I don't know why, I can't
-        keep my eyes off of you And me and all other people with nothing to do
-        Nothing to prove And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you What day is it? And in what
-        month? This clock never seemed so alive What day is it? And in what
-        month? This clock never seemed so alive I can't keep up and I can't back
-        down I've been losing so much time 'Cause it's you and me and all of the
-        people with nothing to do Nothing to lose And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you All
-        of the things that I want to say just aren't coming out right I'm
-        tripping on words You've got my head spinning I don't know where to go
-        from here 'Cause it's you and me and all of the people with nothing to
-        do Nothing to prove And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you There's something about you
-        now I can't quite figure out Everything she does is beautiful Everything
-        she does is right 'Cause it's you and me and all of the people with
-        nothing to do Nothing to lose And it's you and me and all other people
-        And I don't know why, I can't keep my eyes off of you And me and all
-        other people with nothing to do Nothing to prove And it's you and me and
-        all other people And I don't know why, I can't keep my eyes off of you
-        What day is it? And in what month? This clock never seemed so alive What
-        day is it? And in what month? This clock never seemed so alive I can't
-        keep up and I can't back down I've been losing so much time 'Cause it's
-        you and me and all of the people with nothing to do Nothing to lose And
-        it's you and me and all other people And I don't know why, I can't keep
-        my eyes off of you All of the things that I want to say just aren't
-        coming out right I'm tripping on words You've got my head spinning I
-        don't know where to go from here 'Cause it's you and me and all of the
-        people with nothing to do Nothing to prove And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you
-        There's something about you now I can't quite figure out Everything she
-        does is beautiful Everything she does is right 'Cause it's you and me
-        and all of the people with nothing to do Nothing to lose And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you And me and all other people with nothing to do Nothing to
-        prove And it's you and me and all other people And I don't know why, I
-        can't keep my eyes off of you What day is it? And in what month? This
-        clock never seemed so alive What day is it? And in what month? This
-        clock never seemed so alive I can't keep up and I can't back down I've
-        been losing so much time 'Cause it's you and me and all of the people
-        with nothing to do Nothing to lose And it's you and me and all other
-        people And I don't know why, I can't keep my eyes off of you All of the
-        things that I want to say just aren't coming out right I'm tripping on
-        words You've got my head spinning I don't know where to go from here
-        'Cause it's you and me and all of the people with nothing to do Nothing
-        to prove And it's you and me and all other people And I don't know why,
-        I can't keep my eyes off of you There's something about you now I can't
-        quite figure out Everything she does is beautiful Everything she does is
-        right 'Cause it's you and me and all of the people with nothing to do
-        Nothing to lose And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you And me and all other people
-        with nothing to do Nothing to prove And it's you and me and all other
-        people And I don't know why, I can't keep my eyes off of you What day is
-        it? And in what month? This clock never seemed so alive What day is it?
-        And in what month? This clock never seemed so alive I can't keep up and
-        I can't back down I've been losing so much time 'Cause it's you and me
-        and all of the people with nothing to do Nothing to lose And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you All of the things that I want to say just aren't coming out
-        right I'm tripping on words You've got my head spinning I don't know
-        where to go from here 'Cause it's you and me and all of the people with
-        nothing to do Nothing to prove And it's you and me and all other people
-        And I don't know why, I can't keep my eyes off of you There's something
-        about you now I can't quite figure out Everything she does is beautiful
-        Everything she does is right 'Cause it's you and me and all of the
-        people with nothing to do Nothing to lose And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you And
-        me and all other people with nothing to do Nothing to prove And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you What day is it? And in what month? This clock never seemed so
-        alive What day is it? And in what month? This clock never seemed so
-        alive I can't keep up and I can't back down I've been losing so much
-        time 'Cause it's you and me and all of the people with nothing to do
-        Nothing to lose And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you All of the things that I want
-        to say just aren't coming out right I'm tripping on words You've got my
-        head spinning I don't know where to go from here 'Cause it's you and me
-        and all of the people with nothing to do Nothing to prove And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you There's something about you now I can't quite figure out
-        Everything she does is beautiful Everything she does is right 'Cause
-        it's you and me and all of the people with nothing to do Nothing to lose
-        And it's you and me and all other people And I don't know why, I can't
-        keep my eyes off of you And me and all other people with nothing to do
-        Nothing to prove And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you What day is it? And in what
-        month? This clock never seemed so alive What day is it? And in what
-        month? This clock never seemed so alive I can't keep up and I can't back
-        down I've been losing so much time 'Cause it's you and me and all of the
-        people with nothing to do Nothing to lose And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you All
-        of the things that I want to say just aren't coming out right I'm
-        tripping on words You've got my head spinning I don't know where to go
-        from here 'Cause it's you and me and all of the people with nothing to
-        do Nothing to prove And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you There's something about you
-        now I can't quite figure out Everything she does is beautiful Everything
-        she does is right 'Cause it's you and me and all of the people with
-        nothing to do Nothing to lose And it's you and me and all other people
-        And I don't know why, I can't keep my eyes off of you And me and all
-        other people with nothing to do Nothing to prove And it's you and me and
-        all other people And I don't know why, I can't keep my eyes off of you
-        What day is it? And in what month? This clock never seemed so alive
-                What day is it? And in what month? This clock never seemed so alive I
-        can't keep up and I can't back down I've been losing so much time 'Cause
-        it's you and me and all of the people with nothing to do Nothing to lose
-        And it's you and me and all other people And I don't know why, I can't
-        keep my eyes off of you All of the things that I want to say just aren't
-        coming out right I'm tripping on words You've got my head spinning I
-        don't know where to go from here 'Cause it's you and me and all of the
-        people with nothing to do Nothing to prove And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you
-        There's something about you now I can't quite figure out Everything she
-        does is beautiful Everything she does is right 'Cause it's you and me
-        and all of the people with nothing to do Nothing to lose And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you And me and all other people with nothing to do Nothing to
-        prove And it's you and me and all other people And I don't know why, I
-        can't keep my eyes off of you What day is it? And in what month? This
-        clock never seemed so aliveWhat day is it? And in what month? This clock
-        never seemed so alive I can't keep up and I can't back down I've been
-        losing so much time 'Cause it's you and me and all of the people with
-        nothing to do Nothing to lose And it's you and me and all other people
-        And I don't know why, I can't keep my eyes off of you All of the things
-        that I want to say just aren't coming out right I'm tripping on words
-        You've got my head spinning I don't know where to go from here 'Cause
-        it's you and me and all of the people with nothing to do Nothing to
-        prove And it's you and me and all other people And I don't know why, I
-        can't keep my eyes off of you There's something about you now I can't
-        quite figure out Everything she does is beautiful Everything she does is
-        right 'Cause it's you and me and all of the people with nothing to do
-        Nothing to lose And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you And me and all other people
-        with nothing to do Nothing to prove And it's you and me and all other
-        people And I don't know why, I can't keep my eyes off of you What day is
-        it? And in what month? This clock never seemed so alive What day is it?
-        And in what month? This clock never seemed so alive I can't keep up and
-        I can't back down I've been losing so much time 'Cause it's you and me
-        and all of the people with nothing to do Nothing to lose And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you All of the things that I want to say just aren't coming out
-        right I'm tripping on words You've got my head spinning I don't know
-        where to go from here 'Cause it's you and me and all of the people with
-        nothing to do Nothing to prove And it's you and me and all other people
-        And I don't know why, I can't keep my eyes off of you There's something
-        about you now I can't quite figure out Everything she does is beautiful
-        Everything she does is right 'Cause it's you and me and all of the
-        people with nothing to do Nothing to lose And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you And
-        me and all other people with nothing to do Nothing to prove And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you What day is it? And in what month? This clock never seemed so
-        alive What day is it? And in what month? This clock never seemed so
-        alive I can't keep up and I can't back down I've been losing so much
-        time 'Cause it's you and me and all of the people with nothing to do
-        Nothing to lose And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you All of the things that I want
-        to say just aren't coming out right I'm tripping on words You've got my
-        head spinning I don't know where to go from here 'Cause it's you and me
-        and all of the people with nothing to do Nothing to prove And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you There's something about you now I can't quite figure out
-        Everything she does is beautiful Everything she does is right 'Cause
-        it's you and me and all of the people with nothing to do Nothing to lose
-        And it's you and me and all other people And I don't know why, I can't
-        keep my eyes off of you And me and all other people with nothing to do
-        Nothing to prove And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you What day is it? And in what
-        month? This clock never seemed so alive What day is it? And in what
-        month? This clock never seemed so alive I can't keep up and I can't back
-        down I've been losing so much time 'Cause it's you and me and all of the
-        people with nothing to do Nothing to lose And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you All
-        of the things that I want to say just aren't coming out right I'm
-        tripping on words You've got my head spinning I don't know where to go
-        from here 'Cause it's you and me and all of the people with nothing to
-        do Nothing to prove And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you There's something about you
-        now I can't quite figure out Everything she does is beautiful Everything
-        she does is right 'Cause it's you and me and all of the people with
-        nothing to do Nothing to lose And it's you and me and all other people
-        And I don't know why, I can't keep my eyes off of you And me and all
-        other people with nothing to do Nothing to prove And it's you and me and
-        all other people And I don't know why, I can't keep my eyes off of you
-        What day is it? And in what month? This clock never seemed so alive What
-        day is it? And in what month? This clock never seemed so alive I can't
-        keep up and I can't back down I've been losing so much time 'Cause it's
-        you and me and all of the people with nothing to do Nothing to lose And
-        it's you and me and all other people And I don't know why, I can't keep
-        my eyes off of you All of the things that I want to say just aren't
-        coming out right I'm tripping on words You've got my head spinning I
-        don't know where to go from here 'Cause it's you and me and all of the
-        people with nothing to do Nothing to prove And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you
-        There's something about you now I can't quite figure out Everything she
-        does is beautiful Everything she does is right 'Cause it's you and me
-        and all of the people with nothing to do Nothing to lose And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you And me and all other people with nothing to do Nothing to
-        prove And it's you and me and all other people And I don't know why, I
-        can't keep my eyes off of you What day is it? And in what month? This
-        clock never seemed so alive What day is it? And in what month? This
-        clock never seemed so alive I can't keep up and I can't back down I've
-        been losing so much time 'Cause it's you and me and all of the people
-        with nothing to do Nothing to lose And it's you and me and all other
-        people And I don't know why, I can't keep my eyes off of you All of the
-        things that I want to say just aren't coming out right I'm tripping on
-        words You've got my head spinning I don't know where to go from here
-        'Cause it's you and me and all of the people with nothing to do Nothing
-        to prove And it's you and me and all other people And I don't know why,
-        I can't keep my eyes off of you There's something about you now I can't
-        quite figure out Everything she does is beautiful Everything she does is
-        right 'Cause it's you and me and all of the people with nothing to do
-        Nothing to lose And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you And me and all other people
-        with nothing to do Nothing to prove And it's you and me and all other
-        people And I don't know why, I can't keep my eyes off of you What day is
-        it? And in what month? This clock never seemed so alive What day is it?
-        And in what month? This clock never seemed so alive I can't keep up and
-        I can't back down I've been losing so much time 'Cause it's you and me
-        and all of the people with nothing to do Nothing to lose And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you All of the things that I want to say just aren't coming out
-        right I'm tripping on words You've got my head spinning I don't know
-        where to go from here 'Cause it's you and me and all of the people with
-        nothing to do Nothing to prove And it's you and me and all other people
-        And I don't know why, I can't keep my eyes off of you There's something
-        about you now I can't quite figure out Everything she does is beautiful
-        Everything she does is right 'Cause it's you and me and all of the
-        people with nothing to do Nothing to lose And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you And
-        me and all other people with nothing to do Nothing to prove And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you What day is it? And in what month? This clock never seemed so
-        alive What day is it? And in what month? This clock never seemed so
-        alive I can't keep up and I can't back down I've been losing so much
-        time 'Cause it's you and me and all of the people with nothing to do
-        Nothing to lose And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you All of the things that I want
-        to say just aren't coming out right I'm tripping on words You've got my
-        head spinning I don't know where to go from here 'Cause it's you and me
-        and all of the people with nothing to do Nothing to prove And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you There's something about you now I can't quite figure out
-        Everything she does is beautiful Everything she does is right 'Cause
-        it's you and me and all of the people with nothing to do Nothing to lose
-        And it's you and me and all other people And I don't know why, I can't
-        keep my eyes off of you And me and all other people with nothing to do
-        Nothing to prove And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you What day is it? And in what
-        month? This clock never seemed so alive What day is it? And in what
-        month? This clock never seemed so alive I can't keep up and I can't back
-        down I've been losing so much time 'Cause it's you and me and all of the
-        people with nothing to do Nothing to lose And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you All
-        of the things that I want to say just aren't coming out right I'm
-        tripping on words You've got my head spinning I don't know where to go
-        from here 'Cause it's you and me and all of the people with nothing to
-        do Nothing to prove And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you There's something about you
-        now I can't quite figure out Everything she does is beautiful Everything
-        she does is right 'Cause it's you and me and all of the people with
-        nothing to do Nothing to lose And it's you and me and all other people
-        And I don't know why, I can't keep my eyes off of you And me and all
-        other people with nothing to do Nothing to prove And it's you and me and
-        all other people And I don't know why, I can't keep my eyes off of you
-        What day is it? And in what month? This clock never seemed so alive
-                What day is it? And in what month? This clock never seemed so alive I
-        can't keep up and I can't back down I've been losing so much time 'Cause
-        it's you and me and all of the people with nothing to do Nothing to lose
-        And it's you and me and all other people And I don't know why, I can't
-        keep my eyes off of you All of the things that I want to say just aren't
-        coming out right I'm tripping on words You've got my head spinning I
-        don't know where to go from here 'Cause it's you and me and all of the
-        people with nothing to do Nothing to prove And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you
-        There's something about you now I can't quite figure out Everything she
-        does is beautiful Everything she does is right 'Cause it's you and me
-        and all of the people with nothing to do Nothing to lose And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you And me and all other people with nothing to do Nothing to
-        prove And it's you and me and all other people And I don't know why, I
-        can't keep my eyes off of you What day is it? And in what month? This
-        clock never seemed so aliveWhat day is it? And in what month? This clock
-        never seemed so alive I can't keep up and I can't back down I've been
-        losing so much time 'Cause it's you and me and all of the people with
-        nothing to do Nothing to lose And it's you and me and all other people
-        And I don't know why, I can't keep my eyes off of you All of the things
-        that I want to say just aren't coming out right I'm tripping on words
-        You've got my head spinning I don't know where to go from here 'Cause
-        it's you and me and all of the people with nothing to do Nothing to
-        prove And it's you and me and all other people And I don't know why, I
-        can't keep my eyes off of you There's something about you now I can't
-        quite figure out Everything she does is beautiful Everything she does is
-        right 'Cause it's you and me and all of the people with nothing to do
-        Nothing to lose And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you And me and all other people
-        with nothing to do Nothing to prove And it's you and me and all other
-        people And I don't know why, I can't keep my eyes off of you What day is
-        it? And in what month? This clock never seemed so alive What day is it?
-        And in what month? This clock never seemed so alive I can't keep up and
-        I can't back down I've been losing so much time 'Cause it's you and me
-        and all of the people with nothing to do Nothing to lose And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you All of the things that I want to say just aren't coming out
-        right I'm tripping on words You've got my head spinning I don't know
-        where to go from here 'Cause it's you and me and all of the people with
-        nothing to do Nothing to prove And it's you and me and all other people
-        And I don't know why, I can't keep my eyes off of you There's something
-        about you now I can't quite figure out Everything she does is beautiful
-        Everything she does is right 'Cause it's you and me and all of the
-        people with nothing to do Nothing to lose And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you And
-        me and all other people with nothing to do Nothing to prove And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you What day is it? And in what month? This clock never seemed so
-        alive What day is it? And in what month? This clock never seemed so
-        alive I can't keep up and I can't back down I've been losing so much
-        time 'Cause it's you and me and all of the people with nothing to do
-        Nothing to lose And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you All of the things that I want
-        to say just aren't coming out right I'm tripping on words You've got my
-        head spinning I don't know where to go from here 'Cause it's you and me
-        and all of the people with nothing to do Nothing to prove And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you There's something about you now I can't quite figure out
-        Everything she does is beautiful Everything she does is right 'Cause
-        it's you and me and all of the people with nothing to do Nothing to lose
-        And it's you and me and all other people And I don't know why, I can't
-        keep my eyes off of you And me and all other people with nothing to do
-        Nothing to prove And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you What day is it? And in what
-        month? This clock never seemed so alive What day is it? And in what
-        month? This clock never seemed so alive I can't keep up and I can't back
-        down I've been losing so much time 'Cause it's you and me and all of the
-        people with nothing to do Nothing to lose And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you All
-        of the things that I want to say just aren't coming out right I'm
-        tripping on words You've got my head spinning I don't know where to go
-        from here 'Cause it's you and me and all of the people with nothing to
-        do Nothing to prove And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you There's something about you
-        now I can't quite figure out Everything she does is beautiful Everything
-        she does is right 'Cause it's you and me and all of the people with
-        nothing to do Nothing to lose And it's you and me and all other people
-        And I don't know why, I can't keep my eyes off of you And me and all
-        other people with nothing to do Nothing to prove And it's you and me and
-        all other people And I don't know why, I can't keep my eyes off of you
-        What day is it? And in what month? This clock never seemed so alive What
-        day is it? And in what month? This clock never seemed so alive I can't
-        keep up and I can't back down I've been losing so much time 'Cause it's
-        you and me and all of the people with nothing to do Nothing to lose And
-        it's you and me and all other people And I don't know why, I can't keep
-        my eyes off of you All of the things that I want to say just aren't
-        coming out right I'm tripping on words You've got my head spinning I
-        don't know where to go from here 'Cause it's you and me and all of the
-        people with nothing to do Nothing to prove And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you
-        There's something about you now I can't quite figure out Everything she
-        does is beautiful Everything she does is right 'Cause it's you and me
-        and all of the people with nothing to do Nothing to lose And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you And me and all other people with nothing to do Nothing to
-        prove And it's you and me and all other people And I don't know why, I
-        can't keep my eyes off of you What day is it? And in what month? This
-        clock never seemed so alive What day is it? And in what month? This
-        clock never seemed so alive I can't keep up and I can't back down I've
-        been losing so much time 'Cause it's you and me and all of the people
-        with nothing to do Nothing to lose And it's you and me and all other
-        people And I don't know why, I can't keep my eyes off of you All of the
-        things that I want to say just aren't coming out right I'm tripping on
-        words You've got my head spinning I don't know where to go from here
-        'Cause it's you and me and all of the people with nothing to do Nothing
-        to prove And it's you and me and all other people And I don't know why,
-        I can't keep my eyes off of you There's something about you now I can't
-        quite figure out Everything she does is beautiful Everything she does is
-        right 'Cause it's you and me and all of the people with nothing to do
-        Nothing to lose And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you And me and all other people
-        with nothing to do Nothing to prove And it's you and me and all other
-        people And I don't know why, I can't keep my eyes off of you What day is
-        it? And in what month? This clock never seemed so alive What day is it?
-        And in what month? This clock never seemed so alive I can't keep up and
-        I can't back down I've been losing so much time 'Cause it's you and me
-        and all of the people with nothing to do Nothing to lose And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you All of the things that I want to say just aren't coming out
-        right I'm tripping on words You've got my head spinning I don't know
-        where to go from here 'Cause it's you and me and all of the people with
-        nothing to do Nothing to prove And it's you and me and all other people
-        And I don't know why, I can't keep my eyes off of you There's something
-        about you now I can't quite figure out Everything she does is beautiful
-        Everything she does is right 'Cause it's you and me and all of the
-        people with nothing to do Nothing to lose And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you And
-        me and all other people with nothing to do Nothing to prove And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you What day is it? And in what month? This clock never seemed so
-        alive What day is it? And in what month? This clock never seemed so
-        alive I can't keep up and I can't back down I've been losing so much
-        time 'Cause it's you and me and all of the people with nothing to do
-        Nothing to lose And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you All of the things that I want
-        to say just aren't coming out right I'm tripping on words You've got my
-        head spinning I don't know where to go from here 'Cause it's you and me
-        and all of the people with nothing to do Nothing to prove And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you There's something about you now I can't quite figure out
-        Everything she does is beautiful Everything she does is right 'Cause
-        it's you and me and all of the people with nothing to do Nothing to lose
-        And it's you and me and all other people And I don't know why, I can't
-        keep my eyes off of you And me and all other people with nothing to do
-        Nothing to prove And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you What day is it? And in what
-        month? This clock never seemed so alive What day is it? And in what
-        month? This clock never seemed so alive I can't keep up and I can't back
-        down I've been losing so much time 'Cause it's you and me and all of the
-        people with nothing to do Nothing to lose And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you All
-        of the things that I want to say just aren't coming out right I'm
-        tripping on words You've got my head spinning I don't know where to go
-        from here 'Cause it's you and me and all of the people with nothing to
-        do Nothing to prove And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you There's something about you
-        now I can't quite figure out Everything she does is beautiful Everything
-        she does is right 'Cause it's you and me and all of the people with
-        nothing to do Nothing to lose And it's you and me and all other people
-        And I don't know why, I can't keep my eyes off of you And me and all
-        other people with nothing to do Nothing to prove And it's you and me and
-        all other people And I don't know why, I can't keep my eyes off of you
-        What day is it? And in what month? This clock never seemed so alive
-                What day is it? And in what month? This clock never seemed so alive I
-        can't keep up and I can't back down I've been losing so much time 'Cause
-        it's you and me and all of the people with nothing to do Nothing to lose
-        And it's you and me and all other people And I don't know why, I can't
-        keep my eyes off of you All of the things that I want to say just aren't
-        coming out right I'm tripping on words You've got my head spinning I
-        don't know where to go from here 'Cause it's you and me and all of the
-        people with nothing to do Nothing to prove And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you
-        There's something about you now I can't quite figure out Everything she
-        does is beautiful Everything she does is right 'Cause it's you and me
-        and all of the people with nothing to do Nothing to lose And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you And me and all other people with nothing to do Nothing to
-        prove And it's you and me and all other people And I don't know why, I
-        can't keep my eyes off of you What day is it? And in what month? This
-        clock never seemed so aliveWhat day is it? And in what month? This clock
-        never seemed so alive I can't keep up and I can't back down I've been
-        losing so much time 'Cause it's you and me and all of the people with
-        nothing to do Nothing to lose And it's you and me and all other people
-        And I don't know why, I can't keep my eyes off of you All of the things
-        that I want to say just aren't coming out right I'm tripping on words
-        You've got my head spinning I don't know where to go from here 'Cause
-        it's you and me and all of the people with nothing to do Nothing to
-        prove And it's you and me and all other people And I don't know why, I
-        can't keep my eyes off of you There's something about you now I can't
-        quite figure out Everything she does is beautiful Everything she does is
-        right 'Cause it's you and me and all of the people with nothing to do
-        Nothing to lose And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you And me and all other people
-        with nothing to do Nothing to prove And it's you and me and all other
-        people And I don't know why, I can't keep my eyes off of you What day is
-        it? And in what month? This clock never seemed so alive What day is it?
-        And in what month? This clock never seemed so alive I can't keep up and
-        I can't back down I've been losing so much time 'Cause it's you and me
-        and all of the people with nothing to do Nothing to lose And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you All of the things that I want to say just aren't coming out
-        right I'm tripping on words You've got my head spinning I don't know
-        where to go from here 'Cause it's you and me and all of the people with
-        nothing to do Nothing to prove And it's you and me and all other people
-        And I don't know why, I can't keep my eyes off of you There's something
-        about you now I can't quite figure out Everything she does is beautiful
-        Everything she does is right 'Cause it's you and me and all of the
-        people with nothing to do Nothing to lose And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you And
-        me and all other people with nothing to do Nothing to prove And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you What day is it? And in what month? This clock never seemed so
-        alive What day is it? And in what month? This clock never seemed so
-        alive I can't keep up and I can't back down I've been losing so much
-        time 'Cause it's you and me and all of the people with nothing to do
-        Nothing to lose And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you All of the things that I want
-        to say just aren't coming out right I'm tripping on words You've got my
-        head spinning I don't know where to go from here 'Cause it's you and me
-        and all of the people with nothing to do Nothing to prove And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you There's something about you now I can't quite figure out
-        Everything she does is beautiful Everything she does is right 'Cause
-        it's you and me and all of the people with nothing to do Nothing to lose
-        And it's you and me and all other people And I don't know why, I can't
-        keep my eyes off of you And me and all other people with nothing to do
-        Nothing to prove And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you What day is it? And in what
-        month? This clock never seemed so alive What day is it? And in what
-        month? This clock never seemed so alive I can't keep up and I can't back
-        down I've been losing so much time 'Cause it's you and me and all of the
-        people with nothing to do Nothing to lose And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you All
-        of the things that I want to say just aren't coming out right I'm
-        tripping on words You've got my head spinning I don't know where to go
-        from here 'Cause it's you and me and all of the people with nothing to
-        do Nothing to prove And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you There's something about you
-        now I can't quite figure out Everything she does is beautiful Everything
-        she does is right 'Cause it's you and me and all of the people with
-        nothing to do Nothing to lose And it's you and me and all other people
-        And I don't know why, I can't keep my eyes off of you And me and all
-        other people with nothing to do Nothing to prove And it's you and me and
-        all other people And I don't know why, I can't keep my eyes off of you
-        What day is it? And in what month? This clock never seemed so alive What
-        day is it? And in what month? This clock never seemed so alive I can't
-        keep up and I can't back down I've been losing so much time 'Cause it's
-        you and me and all of the people with nothing to do Nothing to lose And
-        it's you and me and all other people And I don't know why, I can't keep
-        my eyes off of you All of the things that I want to say just aren't
-        coming out right I'm tripping on words You've got my head spinning I
-        don't know where to go from here 'Cause it's you and me and all of the
-        people with nothing to do Nothing to prove And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you
-        There's something about you now I can't quite figure out Everything she
-        does is beautiful Everything she does is right 'Cause it's you and me
-        and all of the people with nothing to do Nothing to lose And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you And me and all other people with nothing to do Nothing to
-        prove And it's you and me and all other people And I don't know why, I
-        can't keep my eyes off of you What day is it? And in what month? This
-        clock never seemed so alive What day is it? And in what month? This
-        clock never seemed so alive I can't keep up and I can't back down I've
-        been losing so much time 'Cause it's you and me and all of the people
-        with nothing to do Nothing to lose And it's you and me and all other
-        people And I don't know why, I can't keep my eyes off of you All of the
-        things that I want to say just aren't coming out right I'm tripping on
-        words You've got my head spinning I don't know where to go from here
-        'Cause it's you and me and all of the people with nothing to do Nothing
-        to prove And it's you and me and all other people And I don't know why,
-        I can't keep my eyes off of you There's something about you now I can't
-        quite figure out Everything she does is beautiful Everything she does is
-        right 'Cause it's you and me and all of the people with nothing to do
-        Nothing to lose And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you And me and all other people
-        with nothing to do Nothing to prove And it's you and me and all other
-        people And I don't know why, I can't keep my eyes off of you What day is
-        it? And in what month? This clock never seemed so alive What day is it?
-        And in what month? This clock never seemed so alive I can't keep up and
-        I can't back down I've been losing so much time 'Cause it's you and me
-        and all of the people with nothing to do Nothing to lose And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you All of the things that I want to say just aren't coming out
-        right I'm tripping on words You've got my head spinning I don't know
-        where to go from here 'Cause it's you and me and all of the people with
-        nothing to do Nothing to prove And it's you and me and all other people
-        And I don't know why, I can't keep my eyes off of you There's something
-        about you now I can't quite figure out Everything she does is beautiful
-        Everything she does is right 'Cause it's you and me and all of the
-        people with nothing to do Nothing to lose And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you And
-        me and all other people with nothing to do Nothing to prove And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you What day is it? And in what month? This clock never seemed so
-        alive What day is it? And in what month? This clock never seemed so
-        alive I can't keep up and I can't back down I've been losing so much
-        time 'Cause it's you and me and all of the people with nothing to do
-        Nothing to lose And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you All of the things that I want
-        to say just aren't coming out right I'm tripping on words You've got my
-        head spinning I don't know where to go from here 'Cause it's you and me
-        and all of the people with nothing to do Nothing to prove And it's you
-        and me and all other people And I don't know why, I can't keep my eyes
-        off of you There's something about you now I can't quite figure out
-        Everything she does is beautiful Everything she does is right 'Cause
-        it's you and me and all of the people with nothing to do Nothing to lose
-        And it's you and me and all other people And I don't know why, I can't
-        keep my eyes off of you And me and all other people with nothing to do
-        Nothing to prove And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you What day is it? And in what
-        month? This clock never seemed so alive What day is it? And in what
-        month? This clock never seemed so alive I can't keep up and I can't back
-        down I've been losing so much time 'Cause it's you and me and all of the
-        people with nothing to do Nothing to lose And it's you and me and all
-        other people And I don't know why, I can't keep my eyes off of you All
-        of the things that I want to say just aren't coming out right I'm
-        tripping on words You've got my head spinning I don't know where to go
-        from here 'Cause it's you and me and all of the people with nothing to
-        do Nothing to prove And it's you and me and all other people And I don't
-        know why, I can't keep my eyes off of you There's something about you
-        now I can't quite figure out Everything she does is beautiful Everything
-        she does is right 'Cause it's you and me and all of the people with
-        nothing to do Nothing to lose And it's you and me and all other people
-        And I don't know why, I can't keep my eyes off of you And me and all
-        other people with nothing to do Nothing to prove And it's you and me and
-        all other people And I don't know why, I can't keep my eyes off of you
-        What day is it? And in what month? This clock never seemed so alive
-      </p>
-    </section>
-  </body>
+    <button class="open-btn" id="openBtn">Open Card</button>
+  </div>
+
+  <!-- ── SCREEN 2: PORTRAIT + CARD ── -->
+  <div id="cardScreen">
+    <div class="portrait-wrap">
+      <p class="portrait-text" id="lyricsText"></p>
+    </div>
+    <div class="overlay-text">
+      <div class="overlay-card">
+        <div class="ot-eyebrow">Happy Birthday</div>
+        <div class="ot-main">GINMARIE</div>
+        <div class="ot-sub">March 11 · 2026</div>
+        <div class="ot-divider"><span class="ot-heart">♥</span></div>
+        <div class="ot-message">
+          Wishing you a day as bright and warm as your smile.<br>
+          You deserve every beautiful thing — today and always.
+        </div>
+        <div class="ot-stamp">Here's to you &nbsp;♥&nbsp; March 11</div>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="confettiCanvas"></canvas>
+
+  <script>
+  /* ── LYRICS FILL ── */
+  const lyrics = `What day is it? And in what month? This clock never seemed so alive I can't keep up and I can't back down I've been losing so much time 'Cause it's you and me and all of the people with nothing to do Nothing to lose And it's you and me and all other people And I don't know why, I can't keep my eyes off of you All of the things that I want to say just aren't coming out right I'm tripping on words You've got my head spinning I don't know where to go from here 'Cause it's you and me and all of the people with nothing to do Nothing to prove And it's you and me and all other people And I don't know why, I can't keep my eyes off of you There's something about you now I can't quite figure out Everything she does is beautiful Everything she does is right `;
+  const lyricsEl = document.getElementById('lyricsText');
+  let t = '';
+  for (let i = 0; i < 320; i++) t += lyrics + ' ';
+  lyricsEl.textContent = t;
+
+  /* ── OPEN INTERACTION ── */
+  const openBtn        = document.getElementById('openBtn');
+  const envelope       = document.getElementById('envelope');
+  const envelopeScreen = document.getElementById('envelopeScreen');
+  const cardScreen     = document.getElementById('cardScreen');
+  const petalCanvas    = document.getElementById('petalCanvas');
+  const ornaments      = document.querySelectorAll('.ornament');
+  let opened = false;
+
+  function openCard() {
+    if (opened) return;
+    opened = true;
+
+    envelope.classList.add('opening');
+
+    setTimeout(() => {
+      envelopeScreen.classList.add('hide');
+      cardScreen.classList.add('visible');
+      petalCanvas.classList.add('visible');
+      ornaments.forEach(o => o.classList.add('visible'));
+      burstConfetti();
+    }, 800);
+  }
+
+  openBtn.addEventListener('click', openCard);
+  envelope.addEventListener('click', openCard);
+
+  /* ── CONFETTI BURST ── */
+  const confCv  = document.getElementById('confettiCanvas');
+  const confCtx = confCv.getContext('2d');
+  const CONF_COLORS = ['#c8637a','#f2b8c6','#d4a574','#f9ede8','#a03050','#e07090'];
+  let confParticles = [];
+
+  function resizeAll() {
+    petalCanvas.width = confCv.width = window.innerWidth;
+    petalCanvas.height = confCv.height = window.innerHeight;
+  }
+  resizeAll();
+  window.addEventListener('resize', resizeAll);
+
+  function burstConfetti() {
+    for (let i = 0; i < 130; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 4 + Math.random() * 9;
+      confParticles.push({
+        x: confCv.width / 2, y: confCv.height / 2,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 5,
+        size: 4 + Math.random() * 6,
+        color: CONF_COLORS[Math.floor(Math.random() * CONF_COLORS.length)],
+        alpha: 1, rot: Math.random() * Math.PI * 2,
+        spin: (Math.random() - 0.5) * 0.22,
+        gravity: 0.18 + Math.random() * 0.12,
+      });
+    }
+    animateConfetti();
+  }
+
+  function animateConfetti() {
+    confCtx.clearRect(0, 0, confCv.width, confCv.height);
+    confParticles = confParticles.filter(p => p.alpha > 0.02);
+    confParticles.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      p.vy += p.gravity; p.vx *= 0.98;
+      p.rot += p.spin; p.alpha -= 0.011;
+      confCtx.save();
+      confCtx.globalAlpha = p.alpha;
+      confCtx.translate(p.x, p.y);
+      confCtx.rotate(p.rot);
+      confCtx.fillStyle = p.color;
+      confCtx.fillRect(-p.size/2, -p.size/4, p.size, p.size/2);
+      confCtx.restore();
+    });
+    if (confParticles.length > 0) requestAnimationFrame(animateConfetti);
+    else confCtx.clearRect(0, 0, confCv.width, confCv.height);
+  }
+
+  /* ── ROSE PETALS ── */
+  const pCtx = petalCanvas.getContext('2d');
+
+  function makePetalSprite(color, w, h) {
+    const oc = document.createElement('canvas');
+    oc.width = w; oc.height = h;
+    const c2 = oc.getContext('2d');
+    const grd = c2.createRadialGradient(w*.5,h*.4,0,w*.5,h*.5,Math.max(w,h)*.55);
+    grd.addColorStop(0,   color.replace(')',',.9)').replace('rgb','rgba'));
+    grd.addColorStop(0.7, color.replace(')',',0.55)').replace('rgb','rgba'));
+    grd.addColorStop(1,   color.replace(')',',0)').replace('rgb','rgba'));
+    c2.beginPath();
+    c2.moveTo(w*.5,0);
+    c2.bezierCurveTo(w*1.1,h*.2,w*.95,h*.85,w*.5,h);
+    c2.bezierCurveTo(w*.05,h*.85,w*-.1,h*.2,w*.5,0);
+    c2.closePath(); c2.fillStyle = grd; c2.fill();
+    return oc;
+  }
+
+  const PCOLS = ['rgb(200,99,122)','rgb(222,130,155)','rgb(180,70,100)','rgb(242,184,198)','rgb(160,50,80)'];
+  const SPRITES = PCOLS.map(c => makePetalSprite(c,22,32));
+
+  class Petal {
+    constructor() { this.reset(true); }
+    reset(init) {
+      this.x=Math.random()*petalCanvas.width;
+      this.y=init?Math.random()*petalCanvas.height-petalCanvas.height:-40;
+      this.vx=(Math.random()-.5)*.9; this.vy=.7+Math.random()*1.4;
+      this.angle=Math.random()*Math.PI*2; this.spin=(Math.random()-.5)*.035;
+      this.scale=.5+Math.random()*.9; this.alpha=.55+Math.random()*.45;
+      this.wobble=Math.random()*Math.PI*2;
+      this.sprite=SPRITES[Math.floor(Math.random()*SPRITES.length)];
+      this.w=this.sprite.width*this.scale; this.h=this.sprite.height*this.scale;
+    }
+    update() {
+      this.wobble+=.025;
+      this.x+=this.vx+Math.sin(this.wobble)*.45;
+      this.y+=this.vy; this.angle+=this.spin;
+      if(this.y>petalCanvas.height+60) this.reset(false);
+    }
+    draw() {
+      pCtx.save(); pCtx.globalAlpha=this.alpha;
+      pCtx.translate(this.x,this.y); pCtx.rotate(this.angle);
+      pCtx.drawImage(this.sprite,-this.w/2,-this.h/2,this.w,this.h);
+      pCtx.restore();
+    }
+  }
+
+  const petals = Array.from({length:55},()=>new Petal());
+
+  (function loop(){
+    pCtx.clearRect(0,0,petalCanvas.width,petalCanvas.height);
+    petals.forEach(p=>{p.update();p.draw();});
+    requestAnimationFrame(loop);
+  })();
+  </script>
+</body>
 </html>
